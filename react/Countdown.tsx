@@ -1,28 +1,53 @@
 import React, { useState } from 'react';
 import { TimeSplit } from './typings/global';
 import { tick } from './utils/time';
+
+import { useQuery } from 'react-apollo';
+import useProduct from 'vtex.product-context/useProduct';
+
 import { useCssHandles } from "vtex.css-handles";
 
-interface CountdownProps {
-  targetDate: string
-}
+import productReleaseDateQuery from './queries/productReleaseDate.graphql';
 
+interface CountdownProps {}
 
 const DEFAULT_TARGET_DATE = (new Date('2020-06-25')).toISOString();
 const CSS_HANDLES = ["countdown"]
 
-const Countdown: StorefrontFunctionComponent<CountdownProps> = ({ 
-  targetDate = DEFAULT_TARGET_DATE 
-}) => {
+
+const Countdown: StorefrontFunctionComponent<CountdownProps> = ({}) => {
   const [timeRemaining, setTime] = useState<TimeSplit>({
     hours: '00',
     minutes: '00',
     seconds: '00'
   })
 
+  const { product: { linkText } } = useProduct()
+  const { data, loading, error } = useQuery(productReleaseDateQuery, {
+    variables: {
+    slug: linkText
+  },
+  ssr: false
+  })
+
+  if (loading) {
+    return (
+      <div>
+        <span>Loading...</span>
+      </div>
+    )
+  }
+  if (error) {
+    return (
+      <div>
+        <span>Error!</span>
+      </div>
+    )
+  }
+
   const handles = useCssHandles(CSS_HANDLES)
 
-  tick(targetDate, setTime)
+  tick(data?.product?.releaseDate || DEFAULT_TARGET_DATE, setTime)
 
   return (
     <div className={`${handles.container} t-heading-2 fw3 w-100 c-muted-1`}>
