@@ -30,6 +30,8 @@ const Countdown: StorefrontFunctionComponent<CountdownProps> = ({}) => {
   ssr: false
   })
 
+  const handles = useCssHandles(CSS_HANDLES)
+
   if (loading) {
     return (
       <div>
@@ -45,13 +47,11 @@ const Countdown: StorefrontFunctionComponent<CountdownProps> = ({}) => {
     )
   }
 
-  const handles = useCssHandles(CSS_HANDLES)
-
   tick(data?.product?.releaseDate || DEFAULT_TARGET_DATE, setTime)
 
   return (
     <div className={`${handles.container} t-heading-2 fw3 w-100 c-muted-1`}>
-      <div className={`${handles.countdown} t-heading-2 fw3 w-100 c-muted-1 db tc`}>
+      <div className={`${handles.countdown} db tc`}>
       <h1>{ `${timeRemaining.hours}:${timeRemaining.minutes}:${timeRemaining.seconds}` }</h1>
     </div>
   </div>
